@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CampusPulse · Intelligent Incident Triage</title>
+  <meta name="description" content="CampusPulse is an AI-powered multilingual incident reporting and triage platform for Sapthagiri NPS University.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-layout">
+    <!-- Top Navigation Bar -->
+    <header class="app-header">
+      <div class="brand">
+        <div class="brand-icon">🏫</div>
+        <div class="brand-text">
+          <h1>CampusPulse</h1>
+          <span class="brand-sub">Sapthagiri NPS University · Incident Triage System</span>
+        </div>
+      </div>
+      <div class="header-actions">
+        <div class="language-tags">
+          <span class="lang-chip">English</span>
+          <span class="lang-chip">हिंदी</span>
+          <span class="lang-chip">ಕನ್ನಡ</span>
+          <span class="lang-chip">मराठी</span>
+        </div>
+        <button id="open-settings-btn" class="btn btn-secondary icon-btn" title="Open Settings">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
+            <circle cx="12" cy="12" r="3"/>
+          </svg>
+          Settings
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Workspace -->
+    <main class="main-content">
+      <!-- Left Column: Report Form & Triage Result -->
+      <section class="panel report-panel">
+        <div class="panel-header">
+          <h2>Report an Issue</h2>
+          <p class="panel-desc">Submit details in your preferred language. Photos are analysed using Gemini Vision.</p>
+        </div>
+
+        <form id="report-form" class="report-form">
+          <div class="form-group">
+            <label for="problem-text">What is the problem?</label>
+            <textarea id="problem-text" rows="3" placeholder="e.g. Lift stuck between floors in Academic Block, two people inside... (or in Hindi, Kannada, Marathi)"></textarea>
+          </div>
+
+          <!-- Quick Suggestion Chips -->
+          <div class="quick-chips">
+            <button type="button" class="chip-btn" data-text="Lift stuck between floors in the Academic Block, two people inside">🚨 Stuck in Lift</button>
+            <button type="button" class="chip-btn" data-text="Smoke coming from AC in Computer Labs, students evacuating">🔥 Smoke in Lab</button>
+            <button type="button" class="chip-btn" data-text="Severe water pipe burst flooding the cafeteria wash area">💧 Water Leak</button>
+            <button type="button" class="chip-btn" data-text="Wi-Fi keeps disconnecting in the Library reading hall">📶 Library Wi-Fi</button>
+          </div>
+
+          <!-- Photo & Camera Section -->
+          <div class="form-group">
+            <label>Photo Evidence (Optional)</label>
+            <div class="media-input-bar">
+              <label for="photo-file" class="upload-trigger">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                  <circle cx="8.5" cy="8.5" r="1.5"/>
+                  <polyline points="21 15 16 10 5 21"/>
+                </svg>
+                <span>Upload Image</span>
+                <input type="file" id="photo-file" accept="image/*" class="visually-hidden">
+              </label>
+
+              <button type="button" id="camera-toggle-btn" class="btn btn-secondary camera-trigger">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                  <circle cx="12" cy="13" r="4"/>
+                </svg>
+                <span>Use Camera</span>
+              </button>
+            </div>
+
+            <!-- Live Camera Feed Preview -->
+            <div id="camera-modal" class="camera-box hidden">
+              <video id="camera-stream" autoplay playsinline></video>
+              <div class="camera-actions">
+                <button type="button" id="snap-btn" class="btn btn-primary">Take Snapshot</button>
+                <button type="button" id="close-camera-btn" class="btn btn-secondary">Cancel</button>
+              </div>
+            </div>
+
+            <!-- Attached Image Preview -->
+            <div id="image-preview-container" class="image-preview-container hidden">
+              <img id="image-preview" src="" alt="Report Attachment">
+              <button type="button" id="remove-image-btn" class="btn-remove" title="Remove photo">✕</button>
+            </div>
+          </div>
+
+          <button type="submit" id="submit-btn" class="btn btn-primary submit-btn">
+            <span class="btn-text">Analyse &amp; Submit</span>
+            <span class="btn-spinner hidden"></span>
+          </button>
+        </form>
+
+        <!-- Triage Result Card -->
+        <div id="triage-result" class="triage-card hidden">
+          <div class="triage-banner" id="safety-banner"></div>
+
+          <div class="metrics-row">
+            <div class="metric-box">
+              <span class="metric-label">Priority</span>
+              <span id="res-priority" class="metric-val priority-badge">Medium</span>
+            </div>
+            <div class="metric-box">
+              <span class="metric-label">Category</span>
+              <span id="res-category" class="metric-val">General</span>
+            </div>
+            <div class="metric-box">
+              <span class="metric-label">Response Target</span>
+              <span id="res-sla" class="metric-val">1 day</span>
+            </div>
+          </div>
+
+          <div class="triage-details">
+            <div class="detail-row">
+              <span class="detail-label">Responsible Department:</span>
+              <strong id="res-dept">Administration</strong>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Location:</span>
+              <strong id="res-location">Unknown</strong>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Detected Language:</span>
+              <span id="res-language">English</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">1-Line Summary:</span>
+              <p id="res-summary" class="summary-text"></p>
+            </div>
+            <div id="res-photo-note-row" class="detail-row hidden">
+              <span class="detail-label">Photo Observation:</span>
+              <p id="res-photo-note" class="photo-text"></p>
+            </div>
+            <div id="res-safety-elevation" class="alert-info hidden">
+              ℹ️ Priority was elevated to ensure immediate safety protocol compliance.
+            </div>
+          </div>
+
+          <div class="triage-section">
+            <h4>Reply to Reporter (Localized)</h4>
+            <div id="res-reply" class="reply-bubble"></div>
+          </div>
+
+          <div class="triage-section">
+            <div class="section-title-bar">
+              <h4>Drafted Department Complaint Email</h4>
+              <button type="button" id="copy-draft-btn" class="btn btn-sm btn-secondary">Copy Draft</button>
+            </div>
+            <pre id="res-draft" class="code-block"></pre>
+          </div>
+        </div>
+      </section>
+
+      <!-- Right Column: Queue & Cluster Analytics -->
+      <section class="panel queue-panel">
+        <div class="panel-header">
+          <h2>Campus Queue &amp; Analytics</h2>
+          <p class="panel-desc">Real-time status overview and location incident clustering.</p>
+        </div>
+
+        <!-- Metric Counter Grid -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <span class="stat-num" id="stat-open">0</span>
+            <span class="stat-title">Open Tickets</span>
+          </div>
+          <div class="stat-card stat-critical">
+            <span class="stat-num" id="stat-critical">0</span>
+            <span class="stat-title">Critical Safety</span>
+          </div>
+          <div class="stat-card stat-resolved">
+            <span class="stat-num" id="stat-resolved">0</span>
+            <span class="stat-title">Resolved</span>
+          </div>
+        </div>
+
+        <!-- Location Clustering Bar -->
+        <div class="cluster-section">
+          <h3>Location Cluster Analysis</h3>
+          <div id="cluster-alert" class="cluster-alert hidden"></div>
+          <div id="cluster-bars" class="cluster-bars">
+            <p class="empty-state-text">No active incidents reported yet.</p>
+          </div>
+        </div>
+
+        <!-- Tickets Queue -->
+        <div class="queue-section">
+          <div class="queue-header">
+            <h3>Incident Queue</h3>
+            <div class="queue-filter">
+              <button class="filter-btn active" data-filter="all">All</button>
+              <button class="filter-btn" data-filter="critical">Critical</button>
+              <button class="filter-btn" data-filter="active">Open</button>
+              <button class="filter-btn" data-filter="resolved">Resolved</button>
+            </div>
+          </div>
+          <div id="tickets-container" class="tickets-container">
+            <!-- Rendered dynamically -->
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Settings Slide-over / Modal -->
+    <div id="settings-modal" class="modal-backdrop hidden">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3>System Settings</h3>
+          <button id="close-settings-btn" class="modal-close">✕</button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="cfg-api-key">Gemini API Key</label>
+            <input type="password" id="cfg-api-key" placeholder="Enter key (or leave empty if set in Vercel env)">
+            <span class="field-hint">Optional if GEMINI_API_KEY is configured in Vercel project environment variables.</span>
+          </div>
+
+          <div class="form-group">
+            <label for="cfg-model">Gemini Model</label>
+            <input type="text" id="cfg-model" value="gemini-2.0-flash">
+          </div>
+
+          <div class="form-group form-toggle">
+            <label for="cfg-use-ai">Enable Gemini AI</label>
+            <input type="checkbox" id="cfg-use-ai" checked>
+            <span class="field-hint">Turn off to demonstrate pure multi-lingual regex rules fallback.</span>
+          </div>
+
+          <div class="form-group">
+            <label for="cfg-places">Campus Places (One per line)</label>
+            <textarea id="cfg-places" rows="7"></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button id="save-settings-btn" class="btn btn-primary">Save Settings</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
