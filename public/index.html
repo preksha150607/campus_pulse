@@ -107,8 +107,9 @@
         </form>
 
         <!-- Triage Result Card -->
-        <div id="triage-result" class="triage-card hidden">
-          <div class="triage-banner" id="safety-banner"></div>
+        <div id="triage-result" class="triage-card hidden" role="region" aria-label="Incident Triage Results">
+          <div class="triage-banner" id="safety-banner" role="alert" aria-live="assertive"></div>
+          <div id="res-hotline" class="hotline-banner hidden" role="alert"></div>
 
           <div class="metrics-row">
             <div class="metric-box">
@@ -133,6 +134,7 @@
             <div class="detail-row">
               <span class="detail-label">Location:</span>
               <strong id="res-location">Unknown</strong>
+              <span id="res-facility" class="facility-badge">CAMPUS-GEN</span>
             </div>
             <div class="detail-row">
               <span class="detail-label">Detected Language:</span>
@@ -167,7 +169,7 @@
       </section>
 
       <!-- Right Column: Queue & Cluster Analytics -->
-      <section class="panel queue-panel">
+      <section class="panel queue-panel" role="region" aria-label="Campus Incident Queue and Analytics">
         <div class="panel-header">
           <h2>Campus Queue &amp; Analytics</h2>
           <p class="panel-desc">Real-time status overview and location incident clustering.</p>
@@ -192,7 +194,7 @@
         <!-- Location Clustering Bar -->
         <div class="cluster-section">
           <h3>Location Cluster Analysis</h3>
-          <div id="cluster-alert" class="cluster-alert hidden"></div>
+          <div id="cluster-alert" class="cluster-alert hidden" role="alert"></div>
           <div id="cluster-bars" class="cluster-bars">
             <p class="empty-state-text">No active incidents reported yet.</p>
           </div>
@@ -202,14 +204,17 @@
         <div class="queue-section">
           <div class="queue-header">
             <h3>Incident Queue</h3>
-            <div class="queue-filter">
-              <button class="filter-btn active" data-filter="all">All</button>
-              <button class="filter-btn" data-filter="critical">Critical</button>
-              <button class="filter-btn" data-filter="active">Open</button>
-              <button class="filter-btn" data-filter="resolved">Resolved</button>
+            <div class="queue-actions-bar">
+              <button type="button" id="export-csv-btn" class="btn btn-sm btn-secondary" title="Export incident queue to CSV">📥 Export CSV</button>
+              <div class="queue-filter" role="tablist">
+                <button class="filter-btn active" data-filter="all" role="tab">All</button>
+                <button class="filter-btn" data-filter="critical" role="tab">Critical</button>
+                <button class="filter-btn" data-filter="active" role="tab">Open</button>
+                <button class="filter-btn" data-filter="resolved" role="tab">Resolved</button>
+              </div>
             </div>
           </div>
-          <div id="tickets-container" class="tickets-container">
+          <div id="tickets-container" class="tickets-container" role="feed" aria-label="Incident Tickets List">
             <!-- Rendered dynamically -->
           </div>
         </div>

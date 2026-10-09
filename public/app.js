@@ -186,6 +186,9 @@ const resSafetyElevation = document.getElementById("res-safety-elevation");
 const resReply = document.getElementById("res-reply");
 const resDraft = document.getElementById("res-draft");
 const copyDraftBtn = document.getElementById("copy-draft-btn");
+const resFacility = document.getElementById("res-facility");
+const resHotline = document.getElementById("res-hotline");
+const exportCsvBtn = document.getElementById("export-csv-btn");
 
 // Settings Modal
 const settingsModal = document.getElementById("settings-modal");
@@ -291,6 +294,11 @@ function bindEvents() {
       renderQueue();
     });
   });
+
+  // Export CSV button
+  if (exportCsvBtn) {
+    exportCsvBtn.addEventListener("click", exportIncidentsToCsv);
+  }
 
   // Settings modal controls
   openSettingsBtn.addEventListener("click", () => {
@@ -478,6 +486,15 @@ function renderTriageResult(r) {
   resSla.textContent = r.sla || "Standard";
   resDept.textContent = r.department || "General Administration";
   resLocation.textContent = r.location || "Campus wide / Unknown";
+  if (resFacility) resFacility.textContent = r.facility_code || "CAMPUS-GEN";
+
+  if (r.priority === "Critical" && r.emergency_hotline) {
+    resHotline.textContent = `📞 Immediate Campus Emergency Dispatch: ${r.emergency_hotline}`;
+    resHotline.classList.remove("hidden");
+  } else if (resHotline) {
+    resHotline.classList.add("hidden");
+  }
+
   resLanguage.textContent = (r.language && r.language !== "none") ? r.language.toUpperCase() : "N/A";
   resSummary.textContent = r.summary || "";
 
@@ -616,6 +633,36 @@ function resolveTicket(id) {
   }
 }
 window.resolveTicket = resolveTicket;
+
+function exportIncidentsToCsv() {
+  if (state.tickets.length === 0) {
+    alert(state.lang === "kn" ? "ರಫ್ತು ಮಾಡಲು ಯಾವುದೇ ಘಟನೆಗಳಿಲ್ಲ." :
+          state.lang === "hi" ? "कतार में निर्यात करने के लिए कोई घटना नहीं है।" :
+          "No incidents in queue to export.");
+    return;
+  }
+  const headers = ["ID", "Priority", "Category", "Location", "Department", "Status", "Summary", "Reported Text"];
+  const rows = state.tickets.map(t => [
+    t.id,
+    t.priority,
+    (t.category || "General").replace("_", " "),
+    t.location || "Unknown",
+    t.department || "General",
+    t.done ? "Resolved" : "Open",
+    `"${(t.summary || "").replace(/"/g, '""')}"`,
+    `"${(t.text || "").replace(/"/g, '""')}"`
+  ]);
+  const csvContent = "\uFEFF" + [headers.join(","), ...rows.map(r => r.join(","))].join("\r\n");
+  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `campus_pulse_incidents_${Date.now()}.csv`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+window.exportIncidentsToCsv = exportIncidentsToCsv;
 
 function escapeHtml(str) {
   return (str || "").replace(/[&<>"']/g, m => ({

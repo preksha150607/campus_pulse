@@ -228,8 +228,13 @@ with st.sidebar:
     api_key = st.text_input(t["api_key"], value=default_key, type="password")
     model = st.text_input(t["model"], value=DEFAULT_MODEL)
     use_ai = st.toggle(t["use_ai"], value=True, help=t["use_ai_help"])
+    with st.expander("🚨 Emergency Hotlines (Sapthagiri NPS)", expanded=False):
+        st.markdown("**Security Control (24/7):** `+91 80 2837 2800 (Ext. 100)`  \n"
+                    "**Campus Ambulance:** `+91 80 2837 2801 (Ext. 108)`  \n"
+                    "**National Anti-Ragging:** `1800-180-5522`  \n"
+                    "**Hostel Warden Desk:** `+91 80 2837 2802 (Ext. 104)`")
     st.subheader(t["campus_places"])
-    places_text = st.text_area(t["campus_places_help"], value=DEFAULT_PLACES, height=220)
+    places_text = st.text_area(t["campus_places_help"], value=DEFAULT_PLACES, height=180)
 
 places = [p.strip() for p in places_text.splitlines() if p.strip()]
 
@@ -300,12 +305,19 @@ with left:
             st.warning(f"Gemini fallback notice: ({r['error'][:160]})")
         if r["priority"] == "Critical":
             st.error(f"{t['safety_alert']} " + (r["reply_to_reporter"] if r.get("people_at_risk") else ""))
+            if r.get("emergency_hotline"):
+                st.warning(f"📞 Immediate Dispatch Contact: **{r['emergency_hotline']}**")
+
+        pri_icons = {"Critical": "🚨 Critical", "High": "⚠️ High", "Medium": "🟡 Medium", "Low": "🟢 Low"}
         c1, c2, c3 = st.columns(3)
-        c1.metric(t["metrics_priority"], r["priority"])
-        c2.metric(t["metrics_category"], r["category"].replace("_", " "))
+        c1.metric(t["metrics_priority"], pri_icons.get(r["priority"], r["priority"]))
+        c2.metric(t["metrics_category"], r["category"].replace("_", " ").title())
         c3.metric(t["metrics_sla"], r["sla"])
-        st.write(f"**{t['dept_label']}:** {r['department']}  \n**{t['location_label']}:** {r['location']}  \n"
-                 f"**{t['lang_label']}:** {r['language']}  \n**{t['summary_label']}:** {r['summary']}")
+        fac_code = f" [{r.get('facility_code', 'GEN')}]" if r.get("facility_code") else ""
+        st.write(f"**{t['dept_label']}:** {r['department']}  \n"
+                 f"**{t['location_label']}:** {r['location']}{fac_code}  \n"
+                 f"**{t['lang_label']}:** {r['language']}  \n"
+                 f"**{t['summary_label']}:** {r['summary']}")
         if r.get("photo_note"):
             st.write(f"**{t['photo_note_label']}:** {r['photo_note']}")
         if r.get("raised_by_rules"):
@@ -338,13 +350,36 @@ with right:
     st.subheader(t["queue_header"])
     if not tickets:
         st.write(t["no_reports"])
+    else:
+        # CSV Export for administrators
+        import csv
+        import io as csv_io
+        csv_buf = csv_io.StringIO()
+        writer = csv.writer(csv_buf)
+        writer.writerow(["ID", "Priority", "Category", "Location", "Department", "Status", "Summary", "Reported Text"])
+        for tk in tickets:
+            writer.writerow([
+                tk["id"], tk["priority"], tk["category"], tk["location"],
+                tk.get("department", "General"), "Resolved" if tk["done"] else "Open",
+                tk.get("summary", ""), tk["text"]
+            ])
+        st.download_button(
+            "📥 Export Incidents to CSV (Excel-ready)",
+            data=csv_buf.getvalue().encode("utf-8-sig"),
+            file_name="campus_pulse_incidents.csv",
+            mime="text/csv",
+            use_container_width=True
+        )
+
     order = {"Critical": 0, "High": 1, "Medium": 2, "Low": 3}
+    pri_badge = {"Critical": "🚨 Critical", "High": "⚠️ High", "Medium": "🟡 Medium", "Low": "🟢 Low"}
     for tk in sorted(tickets, key=lambda item: (item["done"], order.get(item["priority"], 4))):
         with st.container(border=True):
             cols = st.columns([1, 5, 2])
             if tk.get("img"):
                 cols[0].image(tk["img"], width=60)
-            cols[1].markdown(f"**{tk['priority']}** · {tk['category'].replace('_', ' ')} · 📍 {tk['location']}  \n{tk['text']}")
+            badge_text = pri_badge.get(tk["priority"], tk["priority"])
+            cols[1].markdown(f"**{badge_text}** · {tk['category'].replace('_', ' ').title()} · 📍 {tk['location']}  \n{tk['text']}")
             if not tk["done"] and cols[2].button(t["resolve_btn"], key=f"r{tk['id']}"):
                 tk["done"] = True
                 st.rerun()
