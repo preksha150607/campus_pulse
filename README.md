@@ -4,10 +4,12 @@
 ### Intelligent Civic Triage, Multilingual Hazard Dispatch & Safety Escalation System
 **Sapthagiri NPS University · Chikkasandra, Hesaraghatta Main Road, Bengaluru**
 
+[![CI](https://github.com/preksha150607/campus_pulse/actions/workflows/ci.yml/badge.svg)](https://github.com/preksha150607/campus_pulse/actions/workflows/ci.yml)
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-Cloud%20Run-00875A?style=for-the-badge&logo=googlecloud&logoColor=white)](https://ais-dev-2yi5qptkumglnl6sjresnq-339416898746.asia-east1.run.app/)
-[![Google Gemini](https://img.shields.io/badge/AI%20Engine-Gemini%202.0%20%2F%203.8%20Flash-4285F4?style=for-the-badge&logo=google&logoColor=white)](https://ai.google.dev/)
+[![Google Gemini](https://img.shields.io/badge/AI%20Engine-Gemini%202.0%20Flash-4285F4?style=for-the-badge&logo=google&logoColor=white)](https://ai.google.dev/)
 [![Streamlit](https://img.shields.io/badge/UI-Streamlit%201.40+-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white)](https://streamlit.io/)
-[![Python](https://img.shields.io/badge/Python-3.10%20%7C%203.11%20%7C%203.12-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
+[![Python](https://img.shields.io/badge/Python-3.11%20%7C%203.12-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
+[![Tests](https://img.shields.io/badge/Tests-16%20Passed%20%7C%20100%25-brightgreen?style=for-the-badge)](test_triage.py)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg?style=for-the-badge)](LICENSE)
 
 <br/>
@@ -117,23 +119,26 @@ The system automatically:
 
 ```text
 campus_pulse/
-├── app.py                 # Primary Streamlit Interactive Application
-├── triage.py              # Core AI & Safety Rule-Based Triage Engine
-├── test_triage.py         # Automated Unit & Security Test Suite (16 Assertions)
-├── eval.py                # Benchmark Evaluation Script (15 Test Cases)
-├── tests.csv              # Multilingual Benchmark Test Dataset
-├── requirements.txt       # Production Dependencies
-├── LICENSE                # Apache 2.0 Open Source License
-├── vercel.json            # Vercel Serverless Hosting Configuration
-├── .gitignore             # Git ignore file for environments and caches
+├── app.py                    # Streamlit UI (multilingual, 4-language, camera + file upload)
+├── triage.py                 # Core AI + Deterministic Triage Engine (Gemini Flash + Rules)
+├── test_triage.py            # pytest unit suite — 16 tests across 6 categories
+├── conftest.py               # pytest configuration (UTF-8 stdout, platform compat)
+├── eval.py                   # Benchmark evaluation script (15 multilingual test cases)
+├── tests.csv                 # Multilingual benchmark dataset (EN / KN / HI / MR)
+├── requirements.txt          # Production + dev dependencies (pinned minimum versions)
+├── vercel.json               # Vercel serverless routing for /api/*
+├── LICENSE                   # Apache 2.0
+├── .github/
+│   └── workflows/
+│       └── ci.yml            # GitHub Actions: pytest (3.11 + 3.12) + ruff linter
 ├── .streamlit/
-│   └── config.toml        # Enterprise Theme and UI Configuration
+│   └── config.toml           # Dark-mode theme configuration
 ├── api/
-│   └── index.py           # Serverless API Handler (Starlette ASGI)
-└── public/                # Static Web Assets (HTML5 / CSS3 / JS)
-    ├── index.html         # Responsive Single Page Interface
-    ├── style.css          # Glassmorphic Styling & Animations
-    └── app.js             # Client-side Logic & LocalStorage Queue
+│   └── index.py              # Starlette ASGI API (rate-limit, security headers, CORS)
+└── public/                   # Vercel static frontend (HTML5 / Vanilla CSS / ES6 JS)
+    ├── index.html            # Accessible SPA (WCAG 2.1 AA, ARIA live regions)
+    ├── style.css             # Glassmorphic dark-mode design system
+    └── app.js                # Multilingual i18n, LocalStorage queue, CSV export
 ```
 
 ---
@@ -172,14 +177,33 @@ streamlit run app.py
 ```
 Open your browser at `http://localhost:8501`.
 
-### 4. Run Automated Unit & Security Tests
+### 4. Run Automated Unit & Security Tests (pytest)
 ```bash
-python -m unittest test_triage.py
+python -m pytest test_triage.py -v
 ```
 Output:
 ```text
-Ran 16 tests in 0.198s
-OK
+============================= test session starts =============================
+collected 16 items
+
+test_triage.py::TestCampusPulseTriage::test_elevator_entrapment_critical_override PASSED
+test_triage.py::TestCampusPulseTriage::test_english_detection PASSED
+test_triage.py::TestCampusPulseTriage::test_facility_code_resolution PASSED
+test_triage.py::TestCampusPulseTriage::test_fire_hazard_critical PASSED
+test_triage.py::TestCampusPulseTriage::test_harassment_critical_safety PASSED
+test_triage.py::TestCampusPulseTriage::test_hindi_detection PASSED
+test_triage.py::TestCampusPulseTriage::test_image_optimization_resizing PASSED
+test_triage.py::TestCampusPulseTriage::test_kannada_detection PASSED
+test_triage.py::TestCampusPulseTriage::test_kannada_elevator_entrapment PASSED
+test_triage.py::TestCampusPulseTriage::test_marathi_detection PASSED
+test_triage.py::TestCampusPulseTriage::test_maximum_character_truncation PASSED
+test_triage.py::TestCampusPulseTriage::test_null_byte_and_control_char_stripping PASSED
+test_triage.py::TestCampusPulseTriage::test_prompt_injection_neutralization PASSED
+test_triage.py::TestCampusPulseTriage::test_routine_sanitation_low_priority PASSED
+test_triage.py::TestCampusPulseTriage::test_singular_plural_location_matching PASSED
+test_triage.py::TestCampusPulseTriage::test_sla_coverage PASSED
+
+========================= 16 passed in 0.51s =================================
 ```
 
 ### 5. Run Benchmark Accuracy Tests
