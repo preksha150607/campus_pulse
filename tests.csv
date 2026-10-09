@@ -1,0 +1,16 @@
+text,category,priority
+"Lift stuck between floors in the Academic Block, two people inside",lift,Critical
+"Lift in the Academic Block is out of service since morning",lift,High
+"Smoke coming from the AC in the Computer Lab, students are leaving",fire,Critical
+"Someone is following girls near the Girls Hostel after 8 pm",harassment,Critical
+"Tap leaking in the cafeteria wash area",water_leak,Medium
+"Wi-Fi keeps dropping in the library reading hall",it_network,Medium
+"लैब में सॉकेट से चिंगारी निकल रही है",fire,Critical
+"कैंटीन के पास कचरा जमा है और बदबू आ रही है",sanitation,Low
+"लाइब्रेरी में वाईफाई नहीं चल रहा",it_network,Medium
+"ಲಿಫ್ಟ್ ಮಧ್ಯದಲ್ಲಿ ಸಿಕ್ಕಿಹಾಕಿಕೊಂಡಿದೆ, ಇಬ್ಬರು ಒಳಗಿದ್ದಾರೆ",lift,Critical
+"ಕ್ಯಾಂಟೀನ್ ಬಳಿ ನೀರು ಸೋರುತ್ತಿದೆ",water_leak,Medium
+"ಹಾಸ್ಟೆಲ್ ಹತ್ತಿರ ಯಾರೋ ಹುಡುಗಿಯರನ್ನು ಹಿಂಬಾಲಿಸುತ್ತಿದ್ದಾರೆ",harassment,Critical
+"लिफ्टमध्ये दोन जण अडकले आहेत",lift,Critical
+"वाचनालयात वाय-फाय चालत नाही",it_network,Medium
+"My phone was stolen from the bag in the library",theft,High
