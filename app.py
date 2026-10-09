@@ -19,7 +19,14 @@ Sports Ground & Gym"""
 
 with st.sidebar:
     st.header("Settings")
-    api_key = st.text_input("Gemini API key", value=os.getenv("GEMINI_API_KEY", ""), type="password")
+    secret_key = ""
+    try:
+        if "GEMINI_API_KEY" in st.secrets:
+            secret_key = st.secrets["GEMINI_API_KEY"]
+    except Exception:
+        pass
+    default_key = os.getenv("GEMINI_API_KEY") or secret_key
+    api_key = st.text_input("Gemini API key", value=default_key, type="password")
     model = st.text_input("Model", value=DEFAULT_MODEL)
     use_ai = st.toggle("Use Gemini", value=True, help="Turn off to demo the rules-only fallback")
     st.subheader("Campus places")
