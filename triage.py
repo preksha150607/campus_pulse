@@ -124,9 +124,37 @@ def _find_place(text, places):
     return "unknown"
 
 
+def _detect_lang(text: str) -> str:
+    if not text:
+        return "English"
+    if re.search(r"[\u0C80-\u0CFF]", text):
+        return "Kannada"
+    if re.search(r"[\u0900-\u097F]", text):
+        if re.search(r"(आहे|आहेत|झाले|झाला|गळती|अडकले|नाही|करा|बघितले|त्रास|पाठलाग)", text):
+            return "Marathi"
+        return "Hindi"
+    return "English"
+
+
+LOCALIZED_REPLIES = {
+    "Kannada": "ನಿಮ್ಮ ವರದಿಯನ್ನು ಸ್ವೀಕರಿಸಲಾಗಿದೆ. ಸುರಕ್ಷತೆಯಾಗಿರಿ, ನಮ್ಮ ಕ್ಯಾಂಪಸ್ ತಂಡಕ್ಕೆ ಮಾಹಿತಿ ನೀಡಲಾಗಿದೆ.",
+    "Hindi": "आपकी रिपोर्ट प्राप्त हो गई है। कृपया सुरक्षित रहें, परिसर सहायता टीम को सूचित कर दिया गया है।",
+    "Marathi": "तुमची तक्रार नोंदवली गेली आहे. कृपया सुरक्षित रहा, कॅम्पस मदत पथकाला माहिती दिली आहे.",
+    "English": "Your report has been received. Please stay safe, the campus support team has been alerted.",
+}
+
+LOCALIZED_EMERGENCY_REPLIES = {
+    "Kannada": "🚨 ತುರ್ತು ರಕ್ಷಣೆ: ದಯವಿಟ್ಟು ಶಾಂತರಾಗಿರಿ. ಲಿಫ್ಟ್ ಅಲಾರಂ ಒತ್ತಿ, ಕ್ಯಾಂಪಸ್ ಭದ್ರತಾ ದಳವು ತಕ್ಷಣ ಧಾವಿಸುತ್ತಿದೆ.",
+    "Hindi": "🚨 आपातकालीन चेतावनी: कृपया शांत रहें। लिफ्ट अलार्म दबाएं, परिसर सुरक्षा दल तुरंत पहुंच रहा है।",
+    "Marathi": "🚨 आणीबाणी इशारा: कृपया शांत रहा. अलार्म बटण दाबा, कॅम्पस सुरक्षा पथक त्वरित पोहोचत आहे.",
+    "English": "🚨 Emergency alert: Please remain calm. Trigger the alarm, campus security is en route.",
+}
+
+
 def triage(text="", image=None, mime=None, places=(), api_key=None, model=DEFAULT_MODEL, use_ai=True) -> dict:
     rules = rules_triage(text)
     ai, err = None, None
+    detected_lang = _detect_lang(text)
     if use_ai and api_key:
         try:
             ai = gemini_triage(text, image, mime, list(places), api_key, model)
@@ -146,12 +174,13 @@ def triage(text="", image=None, mime=None, places=(), api_key=None, model=DEFAUL
         cat, pri = rules["category"], rules["priority"]
         loc = _find_place(text, places)
         label = cat.replace("_", " ")
+        ack_msg = LOCALIZED_EMERGENCY_REPLIES.get(detected_lang, LOCALIZED_EMERGENCY_REPLIES["English"]) if (rules["safety"] or pri == "Critical") else LOCALIZED_REPLIES.get(detected_lang, LOCALIZED_REPLIES["English"])
         out = {
-            "category": cat, "priority": pri, "location": loc, "language": "unknown",
+            "category": cat, "priority": pri, "location": loc, "language": detected_lang,
             "summary": text[:140] or "Photo report, needs manual review",
             "people_at_risk": rules["safety"], "photo_note": "Photo not analysed (rules-only mode)." if image else "",
             "complaint_draft": f"Dear team,\n\nA {pri.lower()} priority {label} issue was reported at {loc}: \"{text}\".\nPlease respond within {INFO[cat][1]}.\n\nRegards,\nCampusPulse",
-            "reply_to_reporter": "Your report has been received.",
+            "reply_to_reporter": ack_msg,
             "source": "Rules only",
         }
     out["department"], out["sla"] = INFO[out["category"]]

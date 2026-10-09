@@ -12,8 +12,113 @@ const DEFAULT_PLACES = [
   "Sports Ground & Gym"
 ];
 
+// Multilingual UI Dictionary (English, Kannada, Hindi, Marathi)
+const I18N = {
+  en: {
+    brandSub: "Sapthagiri NPS University · Incident Triage System",
+    panelTitle: "Report an Issue",
+    panelDesc: "Submit details in your preferred language. Photos are analysed using Gemini Vision.",
+    labelProblem: "What is the problem?",
+    placeholderProblem: "e.g. Lift stuck between floors in Academic Block, two people inside... (or in Hindi, Kannada, Marathi)",
+    labelPhoto: "Photo Evidence (Optional)",
+    btnUpload: "Upload Image",
+    btnCamera: "Use Camera",
+    btnSubmit: "Analyse & Submit",
+    btnAnalysing: "Analysing...",
+    queueTitle: "Campus Queue & Analytics",
+    queueDesc: "Real-time status overview and location incident clustering.",
+    statOpen: "Open Tickets",
+    statCritical: "Critical Safety",
+    statResolved: "Resolved",
+    clusterTitle: "Location Cluster Analysis",
+    incidentQueueTitle: "Incident Queue",
+    chips: [
+      { label: "🚨 Stuck in Lift", text: "Lift stuck between floors in the Academic Block, two people inside" },
+      { label: "🔥 Smoke in Lab", text: "Smoke coming from AC in Computer Labs, students evacuating" },
+      { label: "💧 Water Leak", text: "Severe water pipe burst flooding the cafeteria wash area" },
+      { label: "📶 Library Wi-Fi", text: "Wi-Fi keeps disconnecting in the Library reading hall" }
+    ]
+  },
+  kn: {
+    brandSub: "ಸಪ್ತಗಿರಿ ಎನ್‌ಪಿಎಸ್ ವಿಶ್ವವಿದ್ಯಾಲಯ · ತುರ್ತು ರವಾನೆ ಮತ್ತು ಘಟನೆ ವಿಶ್ಲೇಷಣೆ ವ್ಯವಸ್ಥೆ",
+    panelTitle: "ಸಮಸ್ಯೆಯನ್ನು ವರದಿ ಮಾಡಿ",
+    panelDesc: "ಕನ್ನಡ ಅಥವಾ ಯಾವುದೇ ಭಾಷೆಯಲ್ಲಿ ವರದಿ ಸಲ್ಲಿಸಿ. ಭಾವಚಿತ್ರಗಳನ್ನು ಜೆಮಿನಿ ಎಐ ಮೂಲಕ ವಿಶ್ಲೇಷಿಸಲಾಗುತ್ತದೆ.",
+    labelProblem: "ಸಮಸ್ಯೆ ಏನು?",
+    placeholderProblem: "ಉದಾ: ಅಕಾಡೆಮಿಕ್ ಬ್ಲಾಕ್‌ನಲ್ಲಿ ಲಿಫ್ಟ್ ಮಧ್ಯದಲ್ಲಿ ಸಿಕ್ಕಿಹಾಕಿಕೊಂಡಿದೆ, ಇಬ್ಬರು ವಿದ್ಯಾರ್ಥಿಗಳು ಒಳಗಿದ್ದಾರೆ...",
+    labelPhoto: "ಭಾವಚಿತ್ರ ಪುರಾವೆ (ಐಚ್ಛಿಕ)",
+    btnUpload: "ಫೋಟೋ ಅಪ್‌ಲೋಡ್",
+    btnCamera: "ಕ್ಯಾಮರಾ ಬಳಸಿ",
+    btnSubmit: "ವಿಶ್ಲೇಷಿಸಿ ಮತ್ತು ಸಲ್ಲಿಸಿ",
+    btnAnalysing: "ವಿಶ್ಲೇಷಿಸಲಾಗುತ್ತಿದೆ...",
+    queueTitle: "ಕ್ಯಾಂಪಸ್ ಘಟನೆಗಳ ಸರದಿ ಮತ್ತು ವಿಶ್ಲೇಷಣೆ",
+    queueDesc: "ನೈಜ-ಸಮಯದ ಸ್ಥಿತಿ ಅವಲೋಕನ ಮತ್ತು ಸ್ಥಳೀಯ ಘಟನೆಗಳ ಕ್ಲಸ್ಟರ್.",
+    statOpen: "ತೆರೆದಿರುವ ದೂರುಗಳು",
+    statCritical: "ತುರ್ತು ಸುರಕ್ಷತೆ",
+    statResolved: "ಪರಿಹರಿಸಲಾಗಿದೆ",
+    clusterTitle: "ಸ್ಥಳೀಯ ಕ್ಲಸ್ಟರ್ ವಿಶ್ಲೇಷಣೆ",
+    incidentQueueTitle: "ಘಟನೆಗಳ ಸರದಿ (Queue)",
+    chips: [
+      { label: "🚨 ಲಿಫ್ಟ್‌ನಲ್ಲಿ ಸಿಲುಕಿದ್ದಾರೆ", text: "ಅಕಾಡೆಮಿಕ್ ಬ್ಲಾಕ್‌ನಲ್ಲಿ ಲಿಫ್ಟ್ ಮಧ್ಯದಲ್ಲಿ ಸಿಕ್ಕಿಹಾಕಿಕೊಂಡಿದೆ, ಇಬ್ಬರು ಒಳಗಿದ್ದಾರೆ" },
+      { label: "🔥 ಲ್ಯಾಬ್‌ನಲ್ಲಿ ಹೊಗೆ", text: "ಕಂಪ್ಯೂಟರ್ ಲ್ಯಾಬ್‌ನಲ್ಲಿ ಎಸಿ ಯಿಂದ ಹೊಗೆ ಬರುತ್ತಿದೆ, ವಿದ್ಯಾರ್ಥಿಗಳು ಹೊರಬರುತ್ತಿದ್ದಾರೆ" },
+      { label: "💧 ನೀರು ಸೋರಿಕೆ", text: "ಕ್ಯಾಂಟೀನ್ ವಾಶ್ ಪ್ರದೇಶದಲ್ಲಿ ಪೈಪ್ ಒಡೆದು ನೀರು ಸೋರುತ್ತಿದೆ" },
+      { label: "📶 ಲೈಬ್ರರಿ ವೈಫೈ", text: "ಲೈಬ್ರರಿ ರೀಡಿಂಗ್ ಹಾಲ್‌ನಲ್ಲಿ ವೈಫೈ ಸಂಪರ್ಕ ಕಡಿತಗೊಳ್ಳುತ್ತಿದೆ" }
+    ]
+  },
+  hi: {
+    brandSub: "सप्तगिरि एनपीएस विश्वविद्यालय · घटना रिपोर्टिंग और सुरक्षा प्रबंधन प्रणाली",
+    panelTitle: "समस्या की रिपोर्ट करें",
+    panelDesc: "अपनी पसंदीदा भाषा में विवरण दर्ज करें। जेमिनी विज़न द्वारा फोटो का विश्लेषण किया जाता है।",
+    labelProblem: "समस्या क्या है?",
+    placeholderProblem: "उदा: अकादमिक ब्लॉक में लिफ्ट मंजिलों के बीच फंस गई है, दो लोग अंदर हैं...",
+    labelPhoto: "फोटो साक्ष्य (वैकल्पिक)",
+    btnUpload: "फोटो अपलोड करें",
+    btnCamera: "कैमरा उपयोग करें",
+    btnSubmit: "विश्लेषण करें और सबमिट करें",
+    btnAnalysing: "विश्लेषण हो रहा है...",
+    queueTitle: "परिसर कतार और विश्लेषण",
+    queueDesc: "वास्तविक समय स्थिति और स्थान संकुल विश्लेषण।",
+    statOpen: "लंबित शिकायतें",
+    statCritical: "अति गंभीर",
+    statResolved: "सुलझाया गया",
+    clusterTitle: "स्थान क्लस्टर विश्लेषण",
+    incidentQueueTitle: "घटना कतार (Queue)",
+    chips: [
+      { label: "🚨 लिफ्ट में फंसे लोग", text: "अकादमिक ब्लॉक में लिफ्ट मंजिलों के बीच फंस गई है, दो लोग अंदर हैं" },
+      { label: "🔥 लैब में धुआं", text: "कंप्यूटर लैब में एसी से धुआं निकल रहा है, छात्र बाहर निकल रहे हैं" },
+      { label: "💧 पानी का रिसाव", text: "कैंटीन वॉश एरिया में पाइप से पानी का भारी रिसाव हो रहा है" },
+      { label: "📶 लाइब्रेरी वाई-फाई", text: "लाइब्रेरी रीडिंग हॉल में वाई-फाई बार-बार डिस्कनेक्ट हो रहा है" }
+    ]
+  },
+  mr: {
+    brandSub: "सप्तगिरी एनपीएस विद्यापीठ · घटना तक्रार आणि सुरक्षा व्यवस्थापन",
+    panelTitle: "समस्येची नोंद करा",
+    panelDesc: "आपल्या पसंतीच्या भाषेत तपशील द्या. जेमिनी व्हिजनद्वारे फोटोचे विश्लेषण केले जाते.",
+    labelProblem: "समस्या काय आहे?",
+    placeholderProblem: "उदा: अकॅडेमिक ब्लॉकमध्ये लिफ्ट अडकली आहे, दोन जण आत आहेत...",
+    labelPhoto: "छायाचित्र पुरावा (पर्यायी)",
+    btnUpload: "फोटो अपलोड",
+    btnCamera: "कॅमेरा वापरा",
+    btnSubmit: "विश्लेषण करा आणि सबमिट करा",
+    btnAnalysing: "विश्लेषण करत आहे...",
+    queueTitle: "कॅम्पस तक्रार रांग आणि विश्लेषण",
+    queueDesc: "थेट स्थिती आणि परिसर क्लस्टर विश्लेषण.",
+    statOpen: "प्रलंबित तक्रारी",
+    statCritical: "गंभीर",
+    statResolved: "सोडवले",
+    clusterTitle: "स्थान क्लस्टर विश्लेषण",
+    incidentQueueTitle: "घटना रांग (Queue)",
+    chips: [
+      { label: "🚨 लिफ्टमध्ये अडकले", text: "अकॅडेमिक ब्लॉकमध्ये लिफ्ट अडकली आहे, दोन जण आत आहेत" },
+      { label: "🔥 लॅबमध्ये धूर", text: "कॉम्प्युटर लॅबमध्ये एसीतून धूर येत आहे, विद्यार्थी बाहेर पडत आहेत" },
+      { label: "💧 पाण्याची गळती", text: "कॅन्टीन वॉश भागात पाईप फुटून पाणी वाहत आहे" },
+      { label: "📶 लायब्ररी वाय-फाय", text: "लायब्ररी रीडिंग हॉलमध्ये वाय-फाय वारंवार बंद पडत आहे" }
+    ]
+  }
+};
+
 // State
 let state = {
+  lang: localStorage.getItem("campuspulse_lang") || "en",
   tickets: JSON.parse(localStorage.getItem("campuspulse_tickets") || "[]"),
   filter: "all",
   attachedImage: null, // { base64, mime }
@@ -27,7 +132,15 @@ let state = {
 };
 
 // DOM References
+const brandSub = document.querySelector(".brand-sub");
+const reportPanelTitle = document.querySelector(".report-panel .panel-header h2");
+const reportPanelDesc = document.querySelector(".report-panel .panel-desc");
 const problemText = document.getElementById("problem-text");
+const problemLabel = document.querySelector('label[for="problem-text"]');
+const photoLabel = document.querySelector(".report-form .form-group:nth-of-type(2) label");
+const uploadBtnSpan = document.querySelector(".upload-trigger span");
+const cameraBtnSpan = document.querySelector(".camera-trigger span");
+const quickChipsContainer = document.querySelector(".quick-chips");
 const photoFileInput = document.getElementById("photo-file");
 const cameraToggleBtn = document.getElementById("camera-toggle-btn");
 const cameraModal = document.getElementById("camera-modal");
@@ -41,6 +154,21 @@ const reportForm = document.getElementById("report-form");
 const submitBtn = document.getElementById("submit-btn");
 const btnText = submitBtn.querySelector(".btn-text");
 const btnSpinner = submitBtn.querySelector(".btn-spinner");
+
+// Queue & stats
+const queuePanelTitle = document.querySelector(".queue-panel .panel-header h2");
+const queuePanelDesc = document.querySelector(".queue-panel .panel-desc");
+const statOpenTitle = document.querySelector(".stat-card:nth-child(1) .stat-title");
+const statCriticalTitle = document.querySelector(".stat-card:nth-child(2) .stat-title");
+const statResolvedTitle = document.querySelector(".stat-card:nth-child(3) .stat-title");
+const clusterHeader = document.querySelector(".cluster-section h3");
+const queueSectionHeader = document.querySelector(".queue-header h3");
+const statOpen = document.getElementById("stat-open");
+const statCritical = document.getElementById("stat-critical");
+const statResolved = document.getElementById("stat-resolved");
+const clusterAlert = document.getElementById("cluster-alert");
+const clusterBars = document.getElementById("cluster-bars");
+const ticketsContainer = document.getElementById("tickets-container");
 
 // Triage card elements
 const triageResult = document.getElementById("triage-result");
@@ -59,14 +187,6 @@ const resReply = document.getElementById("res-reply");
 const resDraft = document.getElementById("res-draft");
 const copyDraftBtn = document.getElementById("copy-draft-btn");
 
-// Queue & stats
-const statOpen = document.getElementById("stat-open");
-const statCritical = document.getElementById("stat-critical");
-const statResolved = document.getElementById("stat-resolved");
-const clusterAlert = document.getElementById("cluster-alert");
-const clusterBars = document.getElementById("cluster-bars");
-const ticketsContainer = document.getElementById("tickets-container");
-
 // Settings Modal
 const settingsModal = document.getElementById("settings-modal");
 const openSettingsBtn = document.getElementById("open-settings-btn");
@@ -79,17 +199,66 @@ const cfgPlaces = document.getElementById("cfg-places");
 
 // Initialize UI
 function init() {
+  applyLanguage(state.lang);
   loadSettingsIntoModal();
   renderStatsAndQueue();
   bindEvents();
 }
 
-function bindEvents() {
-  // Quick suggestion chips
-  document.querySelectorAll(".chip-btn").forEach(btn => {
+function applyLanguage(lang) {
+  state.lang = lang || "en";
+  localStorage.setItem("campuspulse_lang", state.lang);
+  const cur = I18N[state.lang] || I18N.en;
+
+  // Update active chip button
+  document.querySelectorAll(".lang-chip").forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.lang === state.lang);
+  });
+
+  if (brandSub) brandSub.textContent = cur.brandSub;
+  if (reportPanelTitle) reportPanelTitle.textContent = cur.panelTitle;
+  if (reportPanelDesc) reportPanelDesc.textContent = cur.panelDesc;
+  if (problemLabel) problemLabel.textContent = cur.labelProblem;
+  if (problemText) problemText.placeholder = cur.placeholderProblem;
+  if (photoLabel) photoLabel.textContent = cur.labelPhoto;
+  if (uploadBtnSpan) uploadBtnSpan.textContent = cur.btnUpload;
+  if (cameraBtnSpan) cameraBtnSpan.textContent = cur.btnCamera;
+  if (btnText) btnText.textContent = cur.btnSubmit;
+
+  if (queuePanelTitle) queuePanelTitle.textContent = cur.queueTitle;
+  if (queuePanelDesc) queuePanelDesc.textContent = cur.queueDesc;
+  if (statOpenTitle) statOpenTitle.textContent = cur.statOpen;
+  if (statCriticalTitle) statCriticalTitle.textContent = cur.statCritical;
+  if (statResolvedTitle) statResolvedTitle.textContent = cur.statResolved;
+  if (clusterHeader) clusterHeader.textContent = cur.clusterTitle;
+  if (queueSectionHeader) queueSectionHeader.textContent = cur.incidentQueueTitle;
+
+  // Render quick chips for this language
+  renderChips(cur.chips);
+}
+
+function renderChips(chips) {
+  if (!quickChipsContainer) return;
+  quickChipsContainer.innerHTML = "";
+  chips.forEach(c => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "chip-btn";
+    btn.textContent = c.label;
+    btn.dataset.text = c.text;
     btn.addEventListener("click", () => {
-      problemText.value = btn.dataset.text;
+      problemText.value = c.text;
       problemText.focus();
+    });
+    quickChipsContainer.appendChild(btn);
+  });
+}
+
+function bindEvents() {
+  // Language switcher
+  document.querySelectorAll(".lang-chip").forEach(btn => {
+    btn.addEventListener("click", () => {
+      applyLanguage(btn.dataset.lang);
     });
   });
 
@@ -223,13 +392,16 @@ async function handleSubmitReport(e) {
   const mime = state.attachedImage ? state.attachedImage.mime : null;
 
   if (!text && !image) {
-    alert("Please describe the issue or attach a photo.");
+    alert(state.lang === "kn" ? "ದಯವಿಟ್ಟು ಸಮಸ್ಯೆಯನ್ನು ವಿವರಿಸಿ ಅಥವಾ ಫೋಟೋ ಸೇರಿಸಿ." :
+          state.lang === "hi" ? "कृपया पहले समस्या का वर्णन करें या फोटो जोड़ें।" :
+          state.lang === "mr" ? "कृपया समस्येचे वर्णन करा किंवा फोटो जोडा." :
+          "Please describe the issue or attach a photo.");
     return;
   }
 
   // Loading UI
   submitBtn.disabled = true;
-  btnText.textContent = "Analysing...";
+  btnText.textContent = (I18N[state.lang] || I18N.en).btnAnalysing;
   btnSpinner.classList.remove("hidden");
 
   try {
@@ -280,7 +452,7 @@ async function handleSubmitReport(e) {
     alert("Triage analysis failed: " + err.message + "\nPlease verify your API key or network connection.");
   } finally {
     submitBtn.disabled = false;
-    btnText.textContent = "Analyse & Submit";
+    btnText.textContent = (I18N[state.lang] || I18N.en).btnSubmit;
     btnSpinner.classList.add("hidden");
   }
 }
@@ -406,6 +578,9 @@ function renderQueue() {
     return (priRank[a.priority] ?? 4) - (priRank[b.priority] ?? 4);
   });
 
+  const resolveLabel = (state.lang === "kn" ? "ಪರಿಹರಿಸಿ" : state.lang === "hi" ? "सुलझाएं" : state.lang === "mr" ? "सोडवा" : "Resolve");
+  const resolvedText = (state.lang === "kn" ? "ಪರಿಹರಿಸಲಾಗಿದೆ ✓" : state.lang === "hi" ? "सुलझाया गया ✓" : state.lang === "mr" ? "सोडवले ✓" : "Resolved ✓");
+
   ticketsContainer.innerHTML = sorted.map(t => {
     const priClass = `pri-${(t.priority || "medium").toLowerCase()}`;
     return `
@@ -422,9 +597,9 @@ function renderQueue() {
         </div>
         <div class="ticket-actions">
           ${!t.done ? `
-            <button class="btn btn-sm btn-secondary" onclick="resolveTicket(${t.id})">Resolve</button>
+            <button class="btn btn-sm btn-secondary" onclick="resolveTicket(${t.id})">${resolveLabel}</button>
           ` : `
-            <span class="text-dim" style="font-size:12px;">Resolved ✓</span>
+            <span class="text-dim" style="font-size:12px;">${resolvedText}</span>
           `}
         </div>
       </div>
